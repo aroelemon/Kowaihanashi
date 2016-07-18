@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NoActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- ToolBarの背景色 -->
+        <item name="colorPrimary">#464646</item>
+        <item name="colorPrimaryDark">#4b4b4b</item>
+        <!-- ToolBarのタイトルテキスト色 -->
+        <!--<item name="android:textColorPrimary">#e84537</item>-->
+    </style>
+</resources>
