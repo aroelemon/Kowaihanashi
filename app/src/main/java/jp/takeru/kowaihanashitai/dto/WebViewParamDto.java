@@ -3,15 +3,26 @@ package jp.takeru.kowaihanashitai.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * WebViewアクティビティのParamDto
  */
 public class WebViewParamDto implements Parcelable {
 
-    /** URL */
-    public String url;
+
+    /** id */
+    public int id;
+    /** サイトid */
+    public int siteId;
     /** タイトル */
     public String title;
+    /** サイト名 */
+    public String siteName;
+    /** URL */
+    public String url;
+    /** 投稿日 */
+    public String date;
 
     public static final Parcelable.Creator<WebViewParamDto> CREATOR
             = new Parcelable.Creator<WebViewParamDto>() {
@@ -31,13 +42,22 @@ public class WebViewParamDto implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(url);
+        out.writeInt(id);
+        out.writeInt(siteId);
         out.writeString(title);
+        out.writeString(siteName);
+        out.writeString(url);
+        out.writeString(date);
+
     }
 
     private WebViewParamDto(Parcel in) {
-        url = in.readString();
+        id = in.readInt();
+        siteId = in.readInt();
         title = in.readString();
+        siteName = in.readString();
+        url = in.readString();
+        date = in.readString();
     }
 
     public WebViewParamDto() {

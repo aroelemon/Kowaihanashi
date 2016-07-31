@@ -1,11 +1,11 @@
 package jp.takeru.kowaihanashitai.dto;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-
-import jp.takeru.kowaihanashitai.db.dao.MyListDao;
-import jp.takeru.kowaihanashitai.db.dto.MyListDto;
 
 /**
  * FeedDto.
@@ -22,7 +22,7 @@ public class FeedDto {
     @SerializedName("pagenate")
     public Pagenate pagenate;
 
-    public class Feed {
+    public static class Feed implements Parcelable {
         /** id */
         @SerializedName("id")
         public int id;
@@ -32,12 +32,56 @@ public class FeedDto {
         /** タイトル */
         @SerializedName("title")
         public String title;
+        /** サイト名 */
+        @SerializedName("site_name")
+        public String siteName;
         /** URL */
         @SerializedName("url")
         public String url;
         /** 投稿日 */
         @SerializedName("publish_at")
         public String date;
+
+
+        public static final Parcelable.Creator<Feed> CREATOR
+                = new Parcelable.Creator<Feed>() {
+            public Feed createFromParcel(Parcel in) {
+                return new Feed(in);
+            }
+
+            public Feed[] newArray(int size) {
+                return new Feed[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            out.writeInt(id);
+            out.writeInt(siteId);
+            out.writeString(title);
+            out.writeString(siteName);
+            out.writeString(url);
+            out.writeString(date);
+
+        }
+
+        private Feed(Parcel in) {
+            id = in.readInt();
+            siteId = in.readInt();
+            title = in.readString();
+            siteName = in.readString();
+            url = in.readString();
+            date = in.readString();
+        }
+
+        public Feed() {
+            // empty
+        }
     }
 
     public class Pagenate {

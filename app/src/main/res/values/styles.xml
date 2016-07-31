@@ -1,11 +1,28 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="ActionBarThemeOverlay" parent="">
+        <!-- タイトル -->
+        <item name="android:textColorPrimary">@color/color_toolbar_title</item>
+        <!-- ハンバーガー -->
+        <item name="colorControlNormal">@color/color_toolbar_humberger</item>
     </style>
 
+    <!-- ツールバー -->
+    <style name="ToolbarStyle" parent="Base.Widget.AppCompat.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@color/color_toolbar_background</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:theme">@style/ActionBarThemeOverlay</item>
+    </style>
+
+    <!-- タブレイアウト -->
+    <style name="TabLayoutStyle" parent="Widget.Design.TabLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="tabIndicatorColor">@color/color_tablayout_indicator</item>
+        <item name="tabBackground">@color/color_tablayout_background</item>
+        <item name="android:textColor">@color/color_tablayout_text</item>
+        <item name="tabSelectedTextColor">@color/color_toolbar_title</item>
+    </style>
 </resources>

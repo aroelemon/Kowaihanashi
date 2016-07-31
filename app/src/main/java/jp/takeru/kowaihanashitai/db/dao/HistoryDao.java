@@ -5,9 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import jp.takeru.kowaihanashitai.db.dto.HistoryDto;
+import jp.takeru.kowaihanashitai.db.dto.HistoryTableDto;
 import jp.takeru.kowaihanashitai.dto.FeedDto;
 
 /**
@@ -26,12 +25,12 @@ public class HistoryDao {
         }
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        HistoryDto historyDto = realm.createObject(HistoryDto.class);
-        historyDto.setId(feed.id);
-        historyDto.setSiteId(feed.siteId);
-        historyDto.setTitle(feed.title);
-        historyDto.setUrl(feed.url);
-        historyDto.setDate(new Date().toString());
+        HistoryTableDto historyTableDto = realm.createObject(HistoryTableDto.class);
+        historyTableDto.setId(feed.id);
+        historyTableDto.setSiteId(feed.siteId);
+        historyTableDto.setTitle(feed.title);
+        historyTableDto.setUrl(feed.url);
+        historyTableDto.setDate(new Date().toString());
         realm.commitTransaction();
         realm.close();
     }
@@ -42,9 +41,9 @@ public class HistoryDao {
      * @param id ID
      * @return 閲覧履歴DTO
      */
-    public static HistoryDto getFeedById(int id) {
+    public static HistoryTableDto getFeedById(int id) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryDto.class).equalTo("id", id).findFirst();
+        return realm.where(HistoryTableDto.class).equalTo("id", id).findFirst();
     }
 
     /**
@@ -52,13 +51,13 @@ public class HistoryDao {
      *
      * @return 閲覧履歴全件
      */
-    public static List<HistoryDto> findAll() {
+    public static List<HistoryTableDto> findAll() {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<HistoryDto> realmResults = realm.where(HistoryDto.class).findAll();
-        List<HistoryDto> historyDtoList = new ArrayList<>();
-        for (HistoryDto historyDto : realmResults) {
-            historyDtoList.add(historyDto);
+        RealmResults<HistoryTableDto> realmResults = realm.where(HistoryTableDto.class).findAll();
+        List<HistoryTableDto> historyTableDtoList = new ArrayList<>();
+        for (HistoryTableDto historyTableDto : realmResults) {
+            historyTableDtoList.add(historyTableDto);
         }
-        return historyDtoList;
+        return historyTableDtoList;
     }
 }

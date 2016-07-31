@@ -2,24 +2,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="horizontal">
+              android:background="?attr/selectableItemBackground"
+              android:padding="10dp">
 
-    <!-- タイトル -->
-    <TextView
-        android:id="@+id/fragment_feed_list_item_title"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:padding="10dp"/>
+        android:orientation="vertical">
 
+        <!-- タイトル -->
+        <TextView
+            android:id="@+id/fragment_feed_list_item_title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"/>
+
+        <!-- サイト名 -->
+        <TextView
+            android:id="@+id/fragment_feed_list_item_sitename_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:textSize="10sp"/>
+
+        <!-- 公開日 -->
+        <TextView
+            android:id="@+id/fragment_feed_list_item_date_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"/>
+    </LinearLayout>
+
+    <!-- 削除ボタン -->
     <ImageView
-        android:id="@+id/fragment_feed_list_item_favorite_imageview"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="5dp"
-        android:src="@drawable/ic_favorite_full"/>
+        android:id="@+id/fragment_feed_list_item_delete_imageview"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_delete"
+        android:visibility="gone"/>
+
 
 </LinearLayout>

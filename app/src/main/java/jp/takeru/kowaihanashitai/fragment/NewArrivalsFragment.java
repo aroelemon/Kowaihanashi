@@ -1,11 +1,14 @@
 package jp.takeru.kowaihanashitai.fragment;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +19,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.takeru.kowaihanashitai.BuildConfig;
 import jp.takeru.kowaihanashitai.adapter.FeedAdapter;
+import jp.takeru.kowaihanashitai.adapter.decorator.DividerItemDecoration;
 import jp.takeru.kowaihanashitai.adapter.listener.EndlessRecyclerOnScrollListener;
 import jp.takeru.kowaihanashitai.db.dao.HistoryDao;
-import jp.takeru.kowaihanashitai.db.dto.HistoryDto;
+import jp.takeru.kowaihanashitai.db.dao.SiteDao;
+import jp.takeru.kowaihanashitai.db.dto.HistoryTableDto;
 import jp.takeru.kowaihanashitai.dto.FeedDto;
 import jp.takeru.kowaihanashitai.R;
 import okhttp3.OkHttpClient;
@@ -31,7 +37,7 @@ import jp.takeru.kowaihanashitai.parser.NewArrivalParser;
 /**
  * 新着フィードフラグメント
  */
-public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAdapterListener {
+public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAdapterListener, View.OnClickListener {
 
     /** ListView */
     private RecyclerView recyclerView;
@@ -39,8 +45,10 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
     private ProgressBar progressBar;
     /** アダプター */
     private FeedAdapter adapter;
+    /** 再試行レイアウト */
+    private ViewGroup retryLayout;
     /** リスナー */
-    OnItemClickListener listener;
+    private OnItemClickListener listener;
 
     /** Feed取得タスク */
     private FeedTask feedTask;
@@ -65,10 +73,17 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // 再試行
+        retryLayout = (ViewGroup) view.findViewById(R.id.fragment_new_arrivals_retry_layout);
+        view.findViewById(R.id.fragment_new_arrivals_retry_button).setOnClickListener(this);
+        // プログレスバー
         progressBar = (ProgressBar) view.findViewById(R.id.fragment_new_arrivals_progressbar);
+
+        // 一覧
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_new_arrivals_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new FeedAdapter(getActivity(), this, new ArrayList<FeedDto.Feed>(0));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
+        adapter = new FeedAdapter(getActivity(), this, new ArrayList<FeedDto.Feed>(0), FeedAdapter.DisplayType.NEW_ARRIVAL);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener((LinearLayoutManager) recyclerView.getLayoutManager()) {
             @Override
@@ -82,9 +97,9 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
     @Override
     public void onStart() {
         super.onStart();
-        List<HistoryDto> historyDaoList = HistoryDao.findAll();
-        for (HistoryDto historyDto : historyDaoList) {
-            adapter.setHistoryId(historyDto.getId());
+        List<HistoryTableDto> historyDaoList = HistoryDao.findAll();
+        for (HistoryTableDto historyTableDto : historyDaoList) {
+            adapter.setHistoryId(historyTableDto.getId());
         }
         adapter.notifyDataSetChanged();
     }
@@ -94,10 +109,15 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
      */
     private void requestApi() {
         feedTask = new FeedTask();
-        StringBuilder apiUrl = new StringBuilder(getString(R.string.url_new_arrival_api));
-        apiUrl.append("?token=aaaaaaaadsafsgeg/efdsofpw42-3r^a.&page=");
-        apiUrl.append(String.valueOf(page));
-        feedTask.execute(apiUrl.toString());
+        Uri.Builder url = Uri.parse(getString(R.string.new_arrival_api_url)).buildUpon();
+        url.appendQueryParameter("token", getString(R.string.new_arrival_api_token));
+        url.appendQueryParameter("page", String.valueOf(page));
+        List<Integer> ids = SiteDao.findEnableSiteIds();
+        url.appendQueryParameter("site_id_in", TextUtils.join(",", ids));
+        if (BuildConfig.DEBUG) {
+            Log.d("#### Request URL ####", url.toString());
+        }
+        feedTask.execute(url.toString());
     }
 
     /**
@@ -107,7 +127,6 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
      */
     private void setupContent(FeedDto feedDto) {
         adapter.addAll(feedDto.feeds);
-        progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -119,6 +138,16 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
     @Override
     public void onLoadMore() {
         requestApi();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.fragment_new_arrivals_retry_button) {    // 再試行ボタン
+            progressBar.setVisibility(View.VISIBLE);
+            retryLayout.setVisibility(View.GONE);
+            requestApi();
+        }
     }
 
     /**
@@ -144,9 +173,16 @@ public class NewArrivalsFragment extends Fragment implements FeedAdapter.FeedAda
         @Override
         protected void onPostExecute(FeedDto feedDto) {
 
+            progressBar.setVisibility(View.GONE);
+
             if (feedDto == null) {  // エラー
-                // 再試行ボタン表示
-                Toast.makeText(getActivity(), "通信エラー", Toast.LENGTH_SHORT);
+                if (page == 1) {
+                    // 再試行ボタン表示
+                    retryLayout.setVisibility(View.VISIBLE);
+                } else {
+                    // 接続エラートースト
+                    Toast.makeText(getContext(), "通信に失敗しました。", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 page++;
                 // 項目のセットアップ

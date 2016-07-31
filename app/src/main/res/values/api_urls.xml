@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_new_arrival_api">http://app_api.fetch-summary.com/2/site_feeds</string>
+    <!-- フィードAPI -->
+    <string name="new_arrival_api_url">http://app_api.fetch-summary.com/2/site_feeds</string>
+    <string name="new_arrival_api_token">aaaaaaaadsafsgeg/efdsofpw42-3r^a.</string>
+    <!-- まとめサイトAPI -->
+    <string name="sites_api_url">http://app_api.fetch-summary.com/2/sites</string>
+    <string name="sites_api_token">aaaaaaaadsafsgeg/efdsofpw42-3r^a.</string>
+
 </resources>

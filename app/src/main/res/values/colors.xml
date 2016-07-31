@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+
+
+    <!-- ツールバー -->
+    <!-- 背景 -->
+    <color name="color_toolbar_background">#464646</color>
+    <!-- タイトル -->
+    <color name="color_toolbar_title">#dc443a</color>
+    <!-- ハンバーガー -->
+    <color name="color_toolbar_humberger">#dc443a</color>
+
+    <!-- タブレイアウト -->
+    <!-- 背景 -->
+    <color name="color_tablayout_background">#464646</color>
+    <!-- 文字色 -->
+    <color name="color_tablayout_text">#ffffff</color>
+    <!-- インジケータ -->
+    <color name="color_tablayout_indicator">#fa4c41</color>
+
 
     <!-- 閲覧済みのテキストカラー -->
     <color name="color_already_read">#9E9E9E</color>

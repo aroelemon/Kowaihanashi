@@ -5,32 +5,9 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/menu_home"
-            android:icon="@android:drawable/ic_menu_gallery"
-            android:title="ホーム"/>
+            android:id="@+id/menu_setting"
+            android:icon="@drawable/ic_setting"
+            android:title="設定"/>
 
-        <item
-            android:id="@+id/menu_mypage"
-            android:icon="@android:drawable/ic_menu_gallery"
-            android:title="マイページ"/>
-
-        <item
-            android:id="@+id/menu_youtube"
-            android:icon="@android:drawable/ic_menu_gallery"
-            android:title="Youtube"/>
     </group>
-
-    <item
-        android:title="その他">
-
-        <menu android:checkableBehavior="single">
-            <item
-                android:id="@+id/menu_app_description"
-                android:title="このアプリについて"/>
-
-            <item
-                android:id="@+id/menu_setting"
-                android:title="設定"/>
-        </menu>
-    </item>
 </menu>

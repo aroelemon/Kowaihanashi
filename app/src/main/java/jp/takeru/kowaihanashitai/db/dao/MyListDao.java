@@ -7,7 +7,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import jp.takeru.kowaihanashitai.db.dto.MyListDto;
+import jp.takeru.kowaihanashitai.db.dto.MyListTableDto;
 import jp.takeru.kowaihanashitai.dto.FeedDto;
 
 /**
@@ -26,12 +26,13 @@ public class MyListDao {
         }
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        MyListDto myListDto = realm.createObject(MyListDto.class);
-        myListDto.setId(feed.id);
-        myListDto.setSiteId(feed.siteId);
-        myListDto.setTitle(feed.title);
-        myListDto.setUrl(feed.url);
-        myListDto.setDate(new Date().toString());
+        MyListTableDto myListTableDto = realm.createObject(MyListTableDto.class);
+        myListTableDto.setId(feed.id);
+        myListTableDto.setSiteId(feed.siteId);
+        myListTableDto.setTitle(feed.title);
+        myListTableDto.setSiteName(feed.siteName);
+        myListTableDto.setUrl(feed.url);
+        myListTableDto.setDate(new Date().toString());
         realm.commitTransaction();
         realm.close();
     }
@@ -42,13 +43,13 @@ public class MyListDao {
      * @param id フィード
      */
     public static void deleteById(int id) {
-        MyListDto myListDto = findById(id);
-        if (myListDto == null) { // 項目なし
+        MyListTableDto myListTableDto = findById(id);
+        if (myListTableDto == null) { // 項目なし
             return;
         }
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.where(MyListDto.class).equalTo("id", id).findAll().deleteAllFromRealm();
+        realm.where(MyListTableDto.class).equalTo("id", id).findAll().deleteAllFromRealm();
         realm.commitTransaction();
         realm.close();
     }
@@ -61,7 +62,7 @@ public class MyListDao {
      */
     public static boolean existFeedById(int id) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(MyListDto.class).equalTo("id", id).count() > 0;
+        return realm.where(MyListTableDto.class).equalTo("id", id).count() > 0;
     }
 
     /**
@@ -71,10 +72,10 @@ public class MyListDao {
      */
     public static List<FeedDto.Feed> findAll() {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<MyListDto> realmResults = realm.where(MyListDto.class).findAll();
+        RealmResults<MyListTableDto> realmResults = realm.where(MyListTableDto.class).findAll();
         List<FeedDto.Feed> feeds = new ArrayList<>();
-        for (MyListDto myListDto : realmResults) {
-            feeds.add(myListDto.getFeed());
+        for (MyListTableDto myListTableDto : realmResults) {
+            feeds.add(myListTableDto.getFeed());
         }
         realm.close();
         return feeds;
@@ -86,9 +87,9 @@ public class MyListDao {
      * @param id 　ID
      * @return フィード
      */
-    public static MyListDto findById(int id) {
+    public static MyListTableDto findById(int id) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<MyListDto> query = realm.where(MyListDto.class).equalTo("id", id);
+        RealmQuery<MyListTableDto> query = realm.where(MyListTableDto.class).equalTo("id", id);
         realm.close();
         return query.findFirst();
     }

@@ -22,6 +22,16 @@ import jp.takeru.kowaihanashitai.dto.FeedDto;
  */
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
 
+    /**
+     * ディスプレイタイプ
+     */
+    public static class DisplayType {
+        /** 新着一覧 */
+        public static int NEW_ARRIVAL = 1;
+        /** お気に入り一覧 */
+        public static int MY_LIST = 2;
+    }
+
 
     /** インフレータ */
     private LayoutInflater inflater;
@@ -31,21 +41,31 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private FeedAdapterListener listener;
     /** 項目 */
     private List<FeedDto.Feed> items;
-
+    /** ディスプレイタイプ */
+    private int displayType;
     /** 閲覧済みのID */
     private List<Integer> historyIds = new ArrayList<>();
 
 
-    public FeedAdapter(Context context, FeedAdapterListener listener, List<FeedDto.Feed> items) {
+    /**
+     * コンストラクタ
+     *
+     * @param context     　コンテキスト
+     * @param listener    　リスナー
+     * @param items       　項目
+     * @param displayType 　ディスプレイタイプ
+     */
+    public FeedAdapter(Context context, FeedAdapterListener listener, List<FeedDto.Feed> items, int displayType) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
         this.items = items;
+        this.displayType = displayType;
     }
 
     @Override
     public FeedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new FeedViewHolder(inflater.inflate(R.layout.fragment_feed_list_item, parent, false), this);
+        return new FeedViewHolder(inflater.inflate(R.layout.fragment_feed_list_item, parent, false), this, displayType);
     }
 
     @Override
@@ -58,13 +78,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         } else {
             holder.titleTextView.setTextColor(context.getResources().getColor(R.color.color_not_read));
         }
-        // お気に入り
-        if (MyListDao.existFeedById(item.id)) {   // お気に入り登録済み
-            holder.starImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_full));
-        } else {
-            holder.starImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_empty));
-        }
-        holder.starImageView.setTag(item);
+        // サイト名
+        holder.siteNameTextView.setText(item.siteName);
+        // 公開日
+        holder.dateTextView.setText(item.date);
     }
 
     @Override
@@ -104,21 +121,24 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
 
-    public void onItemClick(int position) {
-        listener.onItemClick(items.get(position));
-//        if (v instanceof ImageView) {   // スター
-//            FeedDto.Feed item = (FeedDto.Feed) v.getTag();
-//            if (!MyListDao.existFeedById(item.id)) {   //　未登録
-//                // マイリストに追加
-//                MyListDao.add(item);
-//                ((ImageView) v).setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_full));
-//            } else {
-//                // マイリストから削除
-//                MyListDao.deleteById(item.id);
-//                ((ImageView) v).setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_empty));
-//            }
-//
-//        }
+    /**
+     * 項目がタップされた時のコールバック.
+     *
+     * @param feed FeedDTO
+     */
+    public void onItemClick(FeedDto.Feed feed) {
+        listener.onItemClick(feed);
+    }
+
+    /**
+     * 削除ボタンが押された時のコールバック.
+     *
+     * @param feed FeedDTO
+     */
+    public void onDeleteClick(FeedDto.Feed feed) {
+        MyListDao.deleteById(feed.id);
+        items.remove(feed);
+        notifyDataSetChanged();
     }
 
 
@@ -130,20 +150,35 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         private FeedAdapter adapter;
         /** タイトル */
         public TextView titleTextView;
-        /** スター */
-        private ImageView starImageView;
+        /** サイト名 */
+        public TextView siteNameTextView;
+        /** 日付 */
+        public TextView dateTextView;
+        /** 削除ボタン（お気に入り） */
+        public ImageView deleteButton;
 
-        public FeedViewHolder(View itemView, FeedAdapter adapter) {
+        public FeedViewHolder(View itemView, FeedAdapter adapter, int displayType) {
             super(itemView);
             this.adapter = adapter;
             itemView.setOnClickListener(this);
-            titleTextView = (TextView) itemView.findViewById(R.id.fragment_feed_list_item_title);
-            starImageView = (ImageView) itemView.findViewById(R.id.fragment_feed_list_item_favorite_imageview);
+            titleTextView = (TextView) itemView.findViewById(R.id.fragment_feed_list_item_title_textview);
+            siteNameTextView = (TextView) itemView.findViewById(R.id.fragment_feed_list_item_sitename_textview);
+            dateTextView = (TextView) itemView.findViewById(R.id.fragment_feed_list_item_date_textview);
+            deleteButton = (ImageView) itemView.findViewById(R.id.fragment_feed_list_item_delete_imageview);
+            if (DisplayType.MY_LIST == displayType) {
+                deleteButton.setVisibility(View.VISIBLE);
+                deleteButton.setOnClickListener(this);
+            }
         }
 
         @Override
         public void onClick(View v) {
-            adapter.onItemClick(getLayoutPosition());
+            if (v.equals(deleteButton)) {   // 削除ボタン
+                adapter.onDeleteClick(adapter.items.get(getLayoutPosition()));
+            } else {
+                adapter.onItemClick(adapter.items.get(getLayoutPosition()));
+            }
+
         }
     }
 
@@ -201,5 +236,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
          * 項目を更に追加できる際に呼び出されます。
          */
         void onLoadMore();
+
+
     }
 }

@@ -3,13 +3,11 @@ package jp.takeru.kowaihanashitai.db.dto;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import jp.takeru.kowaihanashitai.dto.FeedDto;
-
 
 /**
- * お気に入りDTO.
+ * 閲覧履歴DTO.
  */
-public class MyListDto extends RealmObject {
+public class HistoryTableDto extends RealmObject {
 
     /** id */
     @PrimaryKey
@@ -20,7 +18,7 @@ public class MyListDto extends RealmObject {
     private String title;
     /** URL */
     private String url;
-    /** 登録日 */
+    /** 閲覧日 */
     private String date;
 
     public String getDate() {
@@ -61,14 +59,5 @@ public class MyListDto extends RealmObject {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public FeedDto.Feed getFeed() {
-        FeedDto.Feed feed = new FeedDto().new Feed();
-        feed.id = id;
-        feed.siteId = siteId;
-        feed.title = title;
-        feed.url = url;
-        return feed;
     }
 }

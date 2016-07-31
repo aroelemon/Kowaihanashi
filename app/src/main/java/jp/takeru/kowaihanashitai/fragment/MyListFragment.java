@@ -14,6 +14,7 @@ import java.util.List;
 
 import jp.takeru.kowaihanashitai.R;
 import jp.takeru.kowaihanashitai.adapter.FeedAdapter;
+import jp.takeru.kowaihanashitai.adapter.decorator.DividerItemDecoration;
 import jp.takeru.kowaihanashitai.db.dao.MyListDao;
 import jp.takeru.kowaihanashitai.dto.FeedDto;
 
@@ -48,7 +49,8 @@ public class MyListFragment extends Fragment implements FeedAdapter.FeedAdapterL
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_mylist_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new FeedAdapter(getActivity(), this, new ArrayList<FeedDto.Feed>(0));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
+        adapter = new FeedAdapter(getActivity(), this, new ArrayList<FeedDto.Feed>(0), FeedAdapter.DisplayType.MY_LIST);
         recyclerView.setAdapter(adapter);
         refresh();
     }
@@ -57,8 +59,10 @@ public class MyListFragment extends Fragment implements FeedAdapter.FeedAdapterL
      * 表示内容を更新します。
      */
     public void refresh() {
-        List<FeedDto.Feed> feeds = MyListDao.findAll();
-        adapter.swap(feeds);
+        if (adapter != null) {
+            List<FeedDto.Feed> feeds = MyListDao.findAll();
+            adapter.swap(feeds);
+        }
     }
 
     @Override

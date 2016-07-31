@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/webview_header_menu_mylist"
+        android:checkable="true"
+        android:icon="@drawable/selector_mylist"
+        android:title="お気に入り"
+        app:showAsAction="always"/>
+</menu>
